@@ -39,6 +39,7 @@ class Ui:
         print(msg)
         time.sleep(4)
 
+
     #server methods
     @staticmethod
     def msg_acceptance_proxy(new_msg: str):
@@ -70,6 +71,17 @@ class Ui:
     def check_file_existence(name_file):
         return os.path.exists(name_file)
 
-
-
+    @staticmethod
+    def partition(name_file, size):
+        #function to know in how many parts the file that we are going to upload fits
+        file_information = {}
+        i = 1
+        with open(name_file, 'rb') as f:
+            content = f.read(size)
+            if content:
+                while content:
+                    file_information['part_' + str(i)] = len(content)
+                    content = f.read(size)
+                    i += 1
+        return len(file_information), file_information
 

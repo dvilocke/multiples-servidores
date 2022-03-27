@@ -27,16 +27,24 @@ class Proxy:
                 break
         return new_token
 
+    def save_server(self, new_server):
+        self.server_information.append(new_server)
+        msg = f"The server {new_server['name']} was accepted"
+        self.socket_response.send(msg.encode())
+        Ui.msg_new_server(new_server)
+
+    def assign_servers(self, information_file, client_token):
+        #one of the most difficult functions
+        #key -> str, value-> int
+        check_counter = 0
+        server_information_copy = self.server_information[::]
+        
     def start(self):
         self.socket_response.bind(self.URL)
         while True:
             message = self.socket_response.recv_multipart()
             if message[0].decode() == 'save_server':
-                new_server = pickle.loads(message[1])
-                self.server_information.append(new_server)
-                msg = f"The server {new_server['name']} was accepted"
-                self.socket_response.send(msg.encode())
-                Ui.msg_new_server(new_server)
+                self.save_server(pickle.loads(message[1]))
                 continue
 
             elif message[0].decode() == 'get_token_client':
@@ -45,6 +53,9 @@ class Proxy:
                 self.socket_response.send(str(new_token).encode())
                 continue
 
+            elif message[0].decode() == 'save_file_client':
+                self.assign_servers(pickle.loads(message[1]), int(message[2].decode()))
+                self.socket_response.send(b'ok')
 
 if __name__ == '__main__':
     Proxy().start()

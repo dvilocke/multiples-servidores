@@ -17,7 +17,9 @@ class Server:
     FOLDER = ''
 
     #server variables
-    MEMORY  = 0
+    MEMORY_LIMIT  = 10000
+    SAVED_MEMORY = 0
+    has_space = True
 
     def __init__(self, url:str):
         self.url = url
@@ -53,7 +55,7 @@ class Server:
                     'name': self.FOLDER,
                     'url_bind': self.url,
                     'url_connect': 'tcp://localhost:' + self.get_url_connect(),
-                    'memory': self.MEMORY
+                    'memory': self.MEMORY_LIMIT
                 }
             )]
         )
@@ -64,6 +66,8 @@ class Server:
         self.socket_response.bind(self.url)
         while True:
             message = self.socket_response.recv_multipart()
+            if message[0].decode() == 'get_availability_proxy':
+                pass
 
 
 if __name__ == '__main__':
