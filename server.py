@@ -38,6 +38,10 @@ class Server:
 
         return new_folder
 
+    def get_url_connect(self):
+        new_list = list(self.url)
+        return ''.join(new_list[-4::])
+
     def turn_on(self):
         #we are going to create a folder where the files of this server will be stored
         self.FOLDER = self.assign_folder()
@@ -47,7 +51,8 @@ class Server:
             ['save_server'.encode(), pickle.dumps(
                 {
                     'name': self.FOLDER,
-                    'url': self.url,
+                    'url_bind': self.url,
+                    'url_connect': 'tcp://localhost:' + self.get_url_connect(),
                     'memory': self.MEMORY
                 }
             )]
@@ -62,4 +67,4 @@ class Server:
 
 
 if __name__ == '__main__':
-    Server(url='tcp://*:6666').turn_on()
+    Server(url='tcp://*:7777').turn_on()
