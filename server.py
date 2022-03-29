@@ -17,9 +17,7 @@ class Server:
     FOLDER = ''
 
     #server variables
-    MEMORY_LIMIT  = 10000
-    SAVED_MEMORY = 0
-    has_space = True
+    NUMBER_PARTITIONS  = 10000
 
     def __init__(self, url:str):
         self.url = url
@@ -55,7 +53,9 @@ class Server:
                     'name': self.FOLDER,
                     'url_bind': self.url,
                     'url_connect': 'tcp://localhost:' + self.get_url_connect(),
-                    'memory': self.MEMORY_LIMIT
+                    'number_partitions': self.NUMBER_PARTITIONS,
+                    'partition_counter': 0,
+                    'full': False
                 }
             )]
         )

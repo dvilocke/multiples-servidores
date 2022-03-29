@@ -33,12 +33,34 @@ class Proxy:
         self.socket_response.send(msg.encode())
         Ui.msg_new_server(new_server)
 
-    def assign_servers(self, information_file, client_token):
-        #one of the most difficult functions
-        #key -> str, value-> int
-        check_counter = 0
-        server_information_copy = self.server_information[::]
-        
+    #function to consult availability in general of the servers
+    def there_are_servers_available(self):
+        total_servers = len(self.server_information)
+        count_full = 0
+        for server in self.server_information:
+            if server['full']:
+                count_full += 1
+        return True if count_full != total_servers else False
+
+    def assign_server(self, number_file):
+        #comprobar los errores de asignacion
+        for server in self.server_information:
+            pass
+
+    def assign_route(self, information_file, client_token):
+        token_id = client_token
+        file_name = information_file[2][1]['real_name']
+        file_weight = information_file[0]
+        number_of_parts = information_file[1]
+
+        Ui.msg_new_assign_servers(token_id, file_name, file_weight, number_of_parts)
+
+        for number_file in range(1, information_file[1] + 1):
+            #we get the complete file with your information
+            file = information_file[2][number_file]
+            weight = file['size']
+            self.assign_server(number_file, weight)
+
     def start(self):
         self.socket_response.bind(self.URL)
         while True:
@@ -54,8 +76,14 @@ class Proxy:
                 continue
 
             elif message[0].decode() == 'save_file_client':
-                self.assign_servers(pickle.loads(message[1]), int(message[2].decode()))
-                self.socket_response.send(b'ok')
+                if self.there_are_servers_available():
+                    self.assign_route(pickle.loads(message[1]), int(message[2].decode()))
+                    self.socket_response.send(b'ok')
+                else:
+                    Ui.msg_error('full servers')
+                    self.socket_response.send(b'ok')
+                continue
+
 
 if __name__ == '__main__':
     Proxy().start()

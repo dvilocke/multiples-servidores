@@ -10,6 +10,11 @@ class Ui:
         os.mkdir(new_folder)
 
     @staticmethod
+    def get_file_weight(filename: str):
+        return os.path.getsize(filename)
+
+
+    @staticmethod
     def clear_console():
         command = 'clear'
         if os.name in ('nt', 'dos'):  # If Machine is running on Windows, use cls
@@ -21,7 +26,7 @@ class Ui:
     @staticmethod
     def msg_new_server(new_server : dict):
         msg = f'''
-        ----new Server----
+        ---new Server---
         name:{new_server['name']}
         url_bind:{new_server['url_bind']}
         url_connect:{new_server['url_connect']}
@@ -33,18 +38,38 @@ class Ui:
     @staticmethod
     def msg_new_token(new_token: int):
         msg = f'''
-        ----new Token----
+        ---new Token---
         new token delivered to a user:{new_token}
         '''
         print(msg)
         time.sleep(4)
 
+    def msg_new_assign_servers(self, token_id, file_name, file_weight, number_of_parts):
+        msg = f'''
+        ---new Save---
+        token_id:{token_id}
+        file_name:{file_name}
+        file_weight:{file_weight}
+        number_of_parts:{number_of_parts}
+        '''
+        print(msg)
+        time.sleep(4)
+
+
+    @staticmethod
+    def msg_error(msg_error):
+        msg = f'''
+        --- msg Error --
+        message:{msg_error}
+        '''
+        print(msg)
+        time.sleep(4)
 
     #server methods
     @staticmethod
     def msg_acceptance_proxy(new_msg: str):
         msg = f'''
-        ----msg from proxy----
+        ---msg from proxy---
         message:{new_msg}
         '''
         print(msg)
@@ -63,6 +88,18 @@ class Ui:
         return start_menu
 
     @staticmethod
+    def msg_new_file(your_token, file_name, file_weight, number_of_parts):
+        msg = f'''
+        ---New File---
+        Your_token:{your_token}
+        file_name:{file_name}
+        file_weight:{file_weight}
+        number_of_parts:{number_of_parts}
+        '''
+        print(msg)
+        time.sleep(4)
+
+    @staticmethod
     def show_message(msg):
         print(f'\n{msg}')
         time.sleep(4)
@@ -72,7 +109,7 @@ class Ui:
         return os.path.exists(name_file)
 
     @staticmethod
-    def partition(name_file, size):
+    def partition(name_file, size, token):
         #function to know in how many parts the file that we are going to upload fits
         file_information = {}
         i = 1
@@ -80,8 +117,12 @@ class Ui:
             content = f.read(size)
             if content:
                 while content:
-                    file_information['part_' + str(i)] = len(content)
+                    file_information[i] = {
+                        'real_name' : name_file,
+                        'modified_name' : f'{token}_' + 'part_' + str(i) + f'_{name_file}',
+                        'size': len(content)
+                    }
                     content = f.read(size)
                     i += 1
-        return len(file_information), file_information
+        return Ui.get_file_weight(name_file), len(file_information), file_information
 

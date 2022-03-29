@@ -6,7 +6,7 @@ class Client:
 
     CONTEXT = zmq.Context()
     URL_PROXY = 'tcp://localhost:5555'
-    SIZE = 1024
+    SIZE = 78
 
     def __init__(self):
         self.token : int = 0
@@ -25,7 +25,11 @@ class Client:
 
     def save_file(self):
         self.socket_request.connect(self.URL_PROXY)
-        information_file = Ui.partition(self.name_file, self.SIZE)
+        information_file = Ui.partition(self.name_file, self.SIZE, self.token)
+        #show all the information of the file to the client that is going to send
+        print(information_file)
+        Ui.msg_new_file(self.token, information_file[2][1]['real_name'], information_file[0], information_file[1])
+
         self.socket_request.send_multipart(
             ['save_file_client'.encode(), pickle.dumps(information_file), str(self.token).encode()]
         )
