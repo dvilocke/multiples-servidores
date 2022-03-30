@@ -17,7 +17,7 @@ class Server:
     FOLDER = ''
 
     #server variables
-    NUMBER_PARTITIONS  = 10000
+    NUMBER_PARTITIONS  = 100
 
     def __init__(self, url:str):
         self.url = url
@@ -71,4 +71,4 @@ class Server:
 
 
 if __name__ == '__main__':
-    Server(url='tcp://*:7777').turn_on()
+    Server(url='tcp://*:8888').turn_on()

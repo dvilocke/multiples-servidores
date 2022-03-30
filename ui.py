@@ -30,7 +30,7 @@ class Ui:
         name:{new_server['name']}
         url_bind:{new_server['url_bind']}
         url_connect:{new_server['url_connect']}
-        memory:{new_server['memory']}
+        number_partitions:{new_server['number_partitions']}
         '''
         print(msg)
         time.sleep(4)
@@ -44,7 +44,8 @@ class Ui:
         print(msg)
         time.sleep(4)
 
-    def msg_new_assign_servers(self, token_id, file_name, file_weight, number_of_parts):
+    @staticmethod
+    def msg_new_assign_servers(token_id, file_name, file_weight, number_of_parts):
         msg = f'''
         ---new Save---
         token_id:{token_id}
@@ -54,7 +55,6 @@ class Ui:
         '''
         print(msg)
         time.sleep(4)
-
 
     @staticmethod
     def msg_error(msg_error):
@@ -95,6 +95,15 @@ class Ui:
         file_name:{file_name}
         file_weight:{file_weight}
         number_of_parts:{number_of_parts}
+        '''
+        print(msg)
+        time.sleep(4)
+
+    @staticmethod
+    def msg_from_proxy(msg):
+        msg = f'''
+        ---Proxy Response---
+        msg:{msg}
         '''
         print(msg)
         time.sleep(4)
