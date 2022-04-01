@@ -75,6 +75,21 @@ class Ui:
         print(msg)
         time.sleep(4)
 
+    @staticmethod
+    def msg_save_part_file(information_file):
+        msg = f"""
+        ---msg server(upload information) :D ---
+        file_name: {information_file['real_name']}
+        size: {information_file['size']}
+        part_number: {information_file['part']}
+        url_connect: {information_file['url_connect']}
+        user_token: {information_file['toke_correspondent']}
+        modified_name : {information_file['modified_name']}
+        file_location : {information_file['name']}
+        """
+        print(msg)
+        time.sleep(4)
+
     #client methods
     @staticmethod
     def menu_user():

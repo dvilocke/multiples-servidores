@@ -1,6 +1,7 @@
 
 import zmq
 import pickle
+import  shutil
 
 from ui import  *
 
@@ -38,6 +39,13 @@ class Server:
 
         return new_folder
 
+    def save_file(self, contents, information_file):
+        with open(information_file['modified_name'], 'ab') as f:
+            f.write(contents)
+        #move it to the appropriate folder
+        Ui.msg_save_part_file(information_file)
+        shutil.move(information_file['modified_name'], self.FOLDER)
+
     def get_url_connect(self):
         new_list = list(self.url)
         return ''.join(new_list[-4::])
@@ -66,8 +74,9 @@ class Server:
         self.socket_response.bind(self.url)
         while True:
             message = self.socket_response.recv_multipart()
-            if message[0].decode() == 'get_availability_proxy':
-                pass
+            if message[0].decode() == 'save_file_part_client':
+                self.save_file(message[1], pickle.loads(message[2]))
+                self.socket_response.send(b'ok')
 
 
 if __name__ == '__main__':

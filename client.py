@@ -24,7 +24,17 @@ class Client:
 
     #function to send to servers
     def send_to_servers(self, route):
-        pass
+        file = open(self.name_file, 'rb')
+        for file_with_path in route:
+            self.socket_request.connect(file_with_path['url_connect'])
+            content = file.read(file_with_path['size'])
+            self.socket_request.send_multipart(
+                ['save_file_part_client'.encode(), content, pickle.dumps(file_with_path)]
+            )
+            self.socket_request.recv()
+            self.socket_request.disconnect(file_with_path['url_connect'])
+            
+        file.close()
 
     def save_file(self):
         self.socket_request.connect(self.URL_PROXY)
@@ -35,15 +45,15 @@ class Client:
             ['save_file_client'.encode(), pickle.dumps(information_file), str(self.token).encode()]
         )
         message  = self.socket_request.recv_multipart()
+        self.socket_request.disconnect(self.URL_PROXY)
         Ui.msg_from_proxy(message[2].decode())
 
         if message[0].decode() == '1':
             route = pickle.loads(message[1])
-            print(route)
-            print('------------')
-            print(len(route))
+            #print(route)
+            #exit()
+            self.send_to_servers(route)
 
-        exit()
 
     def menu(self):
         #Before starting, I ask the proxy for the token so that I can get to know myself among many users.
