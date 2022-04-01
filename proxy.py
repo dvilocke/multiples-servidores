@@ -15,6 +15,8 @@ class Proxy:
     #history of save files of all users
     user_history = {}
 
+    link_registration = []
+
     def __init__(self):
         self.socket_response = self.CONTEXT.socket(zmq.REP)
         self.socket_request = self.CONTEXT.socket(zmq.REQ)
@@ -55,6 +57,19 @@ class Proxy:
                     return server
         return None
 
+    #file record system
+    def save_download_path(self, client_token, route):
+        link = str(client_token) + '_file_' +  str(len(self.user_history[client_token]) + 1)
+        # we register the user link
+        self.link_registration.append(link)
+        Ui.msg_information(route[0]['real_name'], client_token, link)
+
+        self.user_history[client_token].append(
+            {
+                link : route
+            }
+        )
+        return link
 
     def assign_route(self, information_file, client_token):
         follow = True
@@ -112,8 +127,9 @@ class Proxy:
                         route = self.assign_route(pickle.loads(message[1]), int(message[2].decode()))
                         if route is not None:
                             #save route and generate link -> revisar
+                            link = self.save_download_path(int(message[2].decode()), route)
                             self.socket_response.send_multipart(
-                                ['1'.encode(), pickle.dumps(route), 'Success: route generated successfully'.encode()]
+                                ['1'.encode(), pickle.dumps(route), 'Success: route generated successfully'.encode(), link.encode()]
                             )
                         else:
                             #the servers are full -> check
@@ -132,6 +148,16 @@ class Proxy:
                     Ui.msg_error(f'the token {int(message[2].decode())}, provoke no server registered in the proxy')
                     self.socket_response.send_multipart(
                         ['0'.encode(), ''.encode(), 'Error: no server registered in the proxy'.encode()]
+                    )
+                continue
+            elif message[0].decode() == 'there_is_this_link_client':
+                if message[1].decode() in self.link_registration:
+                    self.socket_response.send_multipart(
+                        ['1'.encode(), f'The link {message[1].decode()} was accepted successfully'.encode()]
+                    )
+                else:
+                    self.socket_response.send_multipart(
+                        ['0'.encode(), f'Error: The link {message[1].decode()} does not exist'.encode()]
                     )
                 continue
 

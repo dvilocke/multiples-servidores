@@ -6,7 +6,8 @@ class Client:
 
     CONTEXT = zmq.Context()
     URL_PROXY = 'tcp://localhost:5555'
-    SIZE = 10
+    SIZE = 78
+    dictionary_of_links = {}
 
     def __init__(self):
         self.token : int = 0
@@ -36,6 +37,17 @@ class Client:
             
         file.close()
 
+    def download_file(self, link):
+        self.socket_request.connect(self.URL_PROXY)
+        self.socket_request.send_multipart(
+            ['there_is_this_link_client'.encode(), link.encode()]
+        )
+        message = self.socket_request.recv_multipart()
+        Ui.msg_from_proxy(message[1].decode())
+        self.socket_request.disconnect(self.URL_PROXY)
+        if message[0].decode() == '1':
+            pass
+
     def save_file(self):
         self.socket_request.connect(self.URL_PROXY)
         information_file = Ui.partition(self.name_file, self.SIZE, self.token)
@@ -50,8 +62,8 @@ class Client:
 
         if message[0].decode() == '1':
             route = pickle.loads(message[1])
-            #print(route)
-            #exit()
+            link_to_share = message[3].decode()
+            self.dictionary_of_links[route[0]['real_name']] = link_to_share
             self.send_to_servers(route)
 
 
@@ -69,7 +81,8 @@ class Client:
                 else:
                     Ui.show_message(f'The file:{name_file} does not exists')
             elif option == 2:
-                pass
+                new_link = input('enter the link to download:')
+                self.download_file(new_link)
             elif option == 3:
                 break
 

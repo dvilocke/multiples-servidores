@@ -65,6 +65,16 @@ class Ui:
         print(msg)
         time.sleep(4)
 
+    @staticmethod
+    def msg_information(name_file, token_user, link):
+        msg = f'''
+        --- msg Information ---
+        new link for the file:{name_file}
+        the user token that generated it:{token_user}
+        link to get the file:{link}
+        '''
+        print(msg)
+        time.sleep(4)
     #server methods
     @staticmethod
     def msg_acceptance_proxy(new_msg: str):
