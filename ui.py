@@ -36,6 +36,15 @@ class Ui:
         time.sleep(4)
 
     @staticmethod
+    def msg_information_new(new_msg):
+        msg  = f'''
+        --- New Information --
+        msg:{new_msg}
+        '''
+        print(msg)
+        time.sleep(4)
+
+    @staticmethod
     def msg_new_token(new_token: int):
         msg = f'''
         ---new Token---
@@ -159,4 +168,14 @@ class Ui:
                     content = f.read(size)
                     i += 1
         return Ui.get_file_weight(name_file), len(file_information), file_information
+
+    @staticmethod
+    def get_token(link):
+        token = ''
+        for c in link:
+            if c != '_':
+                token += c
+            else:
+                break
+        return token
 

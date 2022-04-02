@@ -17,6 +17,8 @@ class Proxy:
 
     link_registration = []
 
+    history = {}
+
     def __init__(self):
         self.socket_response = self.CONTEXT.socket(zmq.REP)
         self.socket_request = self.CONTEXT.socket(zmq.REQ)
@@ -64,11 +66,8 @@ class Proxy:
         self.link_registration.append(link)
         Ui.msg_information(route[0]['real_name'], client_token, link)
 
-        self.user_history[client_token].append(
-            {
-                link : route
-            }
-        )
+        self.history[link] = route
+
         return link
 
     def assign_route(self, information_file, client_token):
@@ -104,6 +103,13 @@ class Proxy:
                 break
 
         return route if follow else None
+
+    def assign_route_external(self, token, link):
+        prueba = token
+        for key, value in self.history.items():
+            if key == link:
+                break
+        return value
 
     def start(self):
         self.socket_response.bind(self.URL)
@@ -158,6 +164,21 @@ class Proxy:
                 else:
                     self.socket_response.send_multipart(
                         ['0'.encode(), f'Error: The link {message[1].decode()} does not exist'.encode()]
+                    )
+                continue
+            elif message[0].decode() == 'get_route_file_client':
+                token_to_fetch = int(message[1].decode())
+                link = message[2].decode()
+                new_route = self.assign_route_external(token_to_fetch, link)
+                if new_route is not  None:
+                    Ui.msg_information_new(f"the token:{int(message[3].decode())} request the file:{link}, this file was saved by token:{token_to_fetch}")
+                    self.socket_response.send_multipart(
+                        ['1'.encode(), pickle.dumps(new_route)]
+                    )
+                else:
+                    Ui.msg_information_new(f"error, could not get file path {link}")
+                    self.socket_response.send_multipart(
+                        ['0'.encode(), ''.encode()]
                     )
                 continue
 

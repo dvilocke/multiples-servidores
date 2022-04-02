@@ -46,7 +46,19 @@ class Client:
         Ui.msg_from_proxy(message[1].decode())
         self.socket_request.disconnect(self.URL_PROXY)
         if message[0].decode() == '1':
-            pass
+            token = Ui.get_token(link)
+            self.socket_request.connect(self.URL_PROXY)
+            self.socket_request.send_multipart(
+                ['get_route_file_client'.encode(), token.encode(), link.encode(), str(self.token).encode()]
+            )
+            message = self.socket_request.recv_multipart()
+            if message[0].decode() == '1':
+                new_route = pickle.loads(message[1])
+                print(new_route)
+                exit()
+                pass
+            else:
+                pass
 
     def save_file(self):
         self.socket_request.connect(self.URL_PROXY)

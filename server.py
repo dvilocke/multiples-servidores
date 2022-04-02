@@ -77,7 +77,9 @@ class Server:
             if message[0].decode() == 'save_file_part_client':
                 self.save_file(message[1], pickle.loads(message[2]))
                 self.socket_response.send(b'ok')
-
+                continue
+            elif message[0].decode() == 'get_file_client':
+                continue
 
 if __name__ == '__main__':
     Server(url='tcp://*:8888').turn_on()
