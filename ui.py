@@ -179,6 +179,18 @@ class Ui:
         return Ui.get_file_weight(name_file), len(file_information), file_information
 
     @staticmethod
+    def delete_file(path):
+        estado = None
+        try:
+            os.remove(path)
+            Ui.show_message(f'the base file {path} is deleted because it exists')
+            estado = True
+        except:
+            Ui.show_message(f'the base file {path} did not exist')
+            estado = False
+        return estado
+
+    @staticmethod
     def get_token(link):
         token = ''
         for c in link:

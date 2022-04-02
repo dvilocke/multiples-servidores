@@ -6,7 +6,7 @@ class Client:
 
     CONTEXT = zmq.Context()
     URL_PROXY = 'tcp://localhost:5555'
-    SIZE = 10
+    SIZE = 5
     dictionary_of_links = {}
 
     def __init__(self):
@@ -37,12 +37,6 @@ class Client:
             
         file.close()
 
-    def delete(self):
-        #necesito una funcion que se encargue de eliminar ese archivo local si existe para volver
-        #a traer lo que viene desde los servidores
-        #tenemos que conseguir la extension, pero si hacemos lo de atras lo solucionamos
-        return  ''
-
     def download_file(self, link):
         self.socket_request.connect(self.URL_PROXY)
         self.socket_request.send_multipart(
@@ -61,9 +55,10 @@ class Client:
             self.socket_request.disconnect(self.URL_PROXY)
             if message[0].decode() == '1':
                 new_route = pickle.loads(message[1])
+                Ui.delete_file(new_route[0]['real_name'])
                 for server_to_connect in new_route:
                     self.socket_request.connect(server_to_connect['url_connect'])
-                    with open('prueba.txt', 'ab') as f:
+                    with open(server_to_connect['real_name'], 'ab') as f:
                         self.socket_request.send_multipart(
                             ['get_file_client'.encode(), server_to_connect['modified_name'].encode(), str(server_to_connect['size']).encode()]
                         )
@@ -92,7 +87,6 @@ class Client:
             link_to_share = message[3].decode()
             self.dictionary_of_links[route[0]['real_name']] = link_to_share
             self.send_to_servers(route)
-
 
     def menu(self):
         #Before starting, I ask the proxy for the token so that I can get to know myself among many users.

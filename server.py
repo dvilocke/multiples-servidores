@@ -1,4 +1,4 @@
-
+import sys
 import zmq
 import pickle
 import  shutil
@@ -18,12 +18,13 @@ class Server:
     FOLDER = ''
 
     #server variables
-    NUMBER_PARTITIONS  = 100
+    NUMBER_PARTITIONS  = 0
 
-    def __init__(self, url:str):
+    def __init__(self, url:str, number_partitions):
         self.url = url
         self.socket_response = self.CONTEXT.socket(zmq.REP)
         self.socket_request = self.CONTEXT.socket(zmq.REQ)
+        self.NUMBER_PARTITIONS = number_partitions
 
     def assign_folder(self):
         file = open(self.PATH_SERVER_COUNT, 'r')
@@ -92,4 +93,8 @@ class Server:
                 continue
 
 if __name__ == '__main__':
-    Server(url='tcp://*:9999').turn_on()
+    number = sys.argv[1]
+    NUMBER_PARTITIONS = int(sys.argv[2])
+    connection = 'tcp://*:' + str(number)
+    server = Server(url=connection, number_partitions=NUMBER_PARTITIONS)
+    server.turn_on()
