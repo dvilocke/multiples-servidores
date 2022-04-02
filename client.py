@@ -6,7 +6,7 @@ class Client:
 
     CONTEXT = zmq.Context()
     URL_PROXY = 'tcp://localhost:5555'
-    SIZE = 78
+    SIZE = 10
     dictionary_of_links = {}
 
     def __init__(self):
@@ -37,6 +37,12 @@ class Client:
             
         file.close()
 
+    def delete(self):
+        #necesito una funcion que se encargue de eliminar ese archivo local si existe para volver
+        #a traer lo que viene desde los servidores
+        #tenemos que conseguir la extension, pero si hacemos lo de atras lo solucionamos
+        return  ''
+
     def download_file(self, link):
         self.socket_request.connect(self.URL_PROXY)
         self.socket_request.send_multipart(
@@ -55,7 +61,17 @@ class Client:
             self.socket_request.disconnect(self.URL_PROXY)
             if message[0].decode() == '1':
                 new_route = pickle.loads(message[1])
-                
+                for server_to_connect in new_route:
+                    self.socket_request.connect(server_to_connect['url_connect'])
+                    with open('prueba.txt', 'ab') as f:
+                        self.socket_request.send_multipart(
+                            ['get_file_client'.encode(), server_to_connect['modified_name'].encode(), str(server_to_connect['size']).encode()]
+                        )
+                        content = self.socket_request.recv()
+                        f.write(content)
+                        Ui.msg_from_server(f"it was brought from the server :{server_to_connect['name']}, the part: {server_to_connect['part']} of the file:{server_to_connect['real_name']}")
+
+                    self.socket_request.disconnect(server_to_connect['url_connect'])
             else:
                 Ui.show_message('could not create route, sorry :(')
 

@@ -143,6 +143,15 @@ class Ui:
         time.sleep(4)
 
     @staticmethod
+    def msg_from_server(msg):
+        msg = f'''
+        --- Server Response ---
+        msg: {msg}
+        '''
+        print(msg)
+        time.sleep(4)
+
+    @staticmethod
     def show_message(msg):
         print(f'\n{msg}')
         time.sleep(4)

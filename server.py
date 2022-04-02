@@ -70,6 +70,12 @@ class Server:
         Ui.msg_acceptance_proxy(self.socket_request.recv().decode())
         self.start()
 
+    def get_file_client(self, name_file, size):
+        url = self.FOLDER + '/' + name_file
+        with open(url, 'rb') as f:
+            content = f.read(size)
+        return content
+
     def start(self):
         self.socket_response.bind(self.url)
         while True:
@@ -79,8 +85,11 @@ class Server:
                 self.socket_response.send(b'ok')
                 continue
             elif message[0].decode() == 'get_file_client':
-
+                name_file = message[1].decode()
+                size = int(message[2].decode())
+                content = self.get_file_client(name_file, size)
+                self.socket_response.send(content)
                 continue
 
 if __name__ == '__main__':
-    Server(url='tcp://*:8888').turn_on()
+    Server(url='tcp://*:9999').turn_on()
