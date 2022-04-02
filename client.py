@@ -52,13 +52,12 @@ class Client:
                 ['get_route_file_client'.encode(), token.encode(), link.encode(), str(self.token).encode()]
             )
             message = self.socket_request.recv_multipart()
+            self.socket_request.disconnect(self.URL_PROXY)
             if message[0].decode() == '1':
                 new_route = pickle.loads(message[1])
-                print(new_route)
-                exit()
-                pass
+                
             else:
-                pass
+                Ui.show_message('could not create route, sorry :(')
 
     def save_file(self):
         self.socket_request.connect(self.URL_PROXY)

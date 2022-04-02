@@ -79,6 +79,7 @@ class Server:
                 self.socket_response.send(b'ok')
                 continue
             elif message[0].decode() == 'get_file_client':
+
                 continue
 
 if __name__ == '__main__':
